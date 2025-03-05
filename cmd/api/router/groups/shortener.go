@@ -1,7 +1,8 @@
 package groups
 
 import (
-	"acort.link/acort.link/cmd/api/handler"
+	"acortlink/cmd/api/handler"
+
 	"github.com/labstack/echo/v4"
 )
 

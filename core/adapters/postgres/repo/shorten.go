@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"acort.link/acort.link/core/domain/models"
+	"acortlink/core/domain/models"
+
 	"gorm.io/gorm"
 )
 

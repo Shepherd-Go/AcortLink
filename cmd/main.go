@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"acort.link/acort.link/cmd/api/router"
-	"acort.link/acort.link/cmd/provider"
-	"acort.link/acort.link/config"
+	"acortlink/cmd/api/router"
+	"acortlink/cmd/provider"
+	"acortlink/config"
+
 	"github.com/labstack/echo/v4"
 )
 

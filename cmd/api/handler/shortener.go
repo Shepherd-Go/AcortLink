@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"acortlink/core/app"
+	"acortlink/core/domain/models"
 	"net/http"
 
-	"acort.link/acort.link/core/app"
-	"acort.link/acort.link/core/domain/models"
 	"github.com/labstack/echo/v4"
 )
 

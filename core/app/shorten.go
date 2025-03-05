@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"acort.link/acort.link/config"
-	"acort.link/acort.link/core/adapters/postgres/repo"
-	"acort.link/acort.link/core/domain/models"
+	"acortlink/config"
+	"acortlink/core/adapters/postgres/repo"
+	"acortlink/core/domain/models"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"

@@ -3,8 +3,9 @@ package router
 import (
 	"net/http"
 
-	"acort.link/acort.link/cmd/api/handler"
-	"acort.link/acort.link/cmd/api/router/groups"
+	"acortlink/cmd/api/handler"
+	"acortlink/cmd/api/router/groups"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

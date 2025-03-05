@@ -3,7 +3,8 @@ package postgres
 import (
 	"fmt"
 
-	"acort.link/acort.link/config"
+	"acortlink/config"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 

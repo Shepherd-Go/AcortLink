@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"acort.link/acort.link/config"
+	"acortlink/config"
+
 	"github.com/redis/go-redis/v9"
 )
 
