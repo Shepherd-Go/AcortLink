@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"acort.link/acort.link/core/domain/models"
@@ -37,8 +36,6 @@ func (r *shortenRepo) CreateShorten(ctx context.Context, url models.URL) error {
 func (r *shortenRepo) SearchUrl(ctx context.Context, path string) (models.URL, error) {
 
 	var url models.URL
-
-	fmt.Println(path)
 
 	if err := r.db.WithContext(ctx).
 		Table("urls.urls").

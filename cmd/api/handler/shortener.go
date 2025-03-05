@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"acort.link/acort.link/core/app"
@@ -46,8 +45,6 @@ func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 
 func (r *shortenerRequest) RedirectURL(c echo.Context) error {
 
-	fmt.Println("RedirectURL")
-
 	ctx := c.Request().Context()
 	path := models.Path{}
 
@@ -59,10 +56,10 @@ func (r *shortenerRequest) RedirectURL(c echo.Context) error {
 		return echo.NewHTTPError(400, err.Error())
 	}
 
-	url, err := r.shorten.SearchUrl(ctx, path)
+	url, err := r.shorten.SearchUrl(ctx, path.Path)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, url.URL)
+	return c.JSON(http.StatusOK, url)
 }

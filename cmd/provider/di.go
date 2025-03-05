@@ -7,6 +7,7 @@ import (
 	"acort.link/acort.link/config"
 	"acort.link/acort.link/core/adapters/postgres"
 	"acort.link/acort.link/core/adapters/postgres/repo"
+	"acort.link/acort.link/core/adapters/redis"
 	"acort.link/acort.link/core/app"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/dig"
@@ -27,6 +28,7 @@ func BuildContainer() *dig.Container {
 	})
 
 	_ = Container.Provide(postgres.NewPostgresConnection)
+	_ = Container.Provide(redis.NewRedisConnection)
 
 	_ = Container.Provide(router.New)
 

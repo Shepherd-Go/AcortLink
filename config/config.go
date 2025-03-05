@@ -23,6 +23,7 @@ type Config struct {
 	Server   Server   `env:"server"`
 	Domain   Domain   `env:"domain"`
 	Postgres Postgres `env:"postgres"`
+	Redis    Redis    `env:"redis"`
 }
 
 type Server struct {
@@ -39,6 +40,13 @@ type Postgres struct {
 	User     string `env:"user"`
 	Password string `env:"password"`
 	Database string `env:"database"`
+}
+
+type Redis struct {
+	Host     string `env:"host"`
+	Port     int    `env:"port"`
+	User     string `env:"user"`
+	Password string `env:"password"`
 }
 
 func Environments() {
