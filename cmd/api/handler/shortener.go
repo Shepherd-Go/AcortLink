@@ -10,7 +10,7 @@ import (
 
 type ShortenerRequest interface {
 	CreateShortURL(c echo.Context) error
-	RedirectURL(c echo.Context) error
+	SearchOriginalUrl(c echo.Context) error
 }
 
 type shortenerRequest struct {
@@ -35,7 +35,7 @@ func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 		return echo.NewHTTPError(400, err.Error())
 	}
 
-	link, err := r.shorten.CreateShortenURL(ctx, url)
+	link, err := r.shorten.CreateShortURL(ctx, url)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 	return c.JSON(http.StatusCreated, link)
 }
 
-func (r *shortenerRequest) RedirectURL(c echo.Context) error {
+func (r *shortenerRequest) SearchOriginalUrl(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	path := models.Path{}

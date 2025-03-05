@@ -20,5 +20,5 @@ func NewGroupShortener(handShortener handler.ShortenerRequest) ShortenerRequest 
 
 func (r *shortenerRequest) Resource(g *echo.Group) {
 	g.POST("/create", r.handShortener.CreateShortURL)
-	g.GET("/search", r.handShortener.RedirectURL)
+	g.GET("/search", r.handShortener.SearchOriginalUrl)
 }

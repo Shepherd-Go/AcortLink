@@ -15,7 +15,7 @@ import (
 )
 
 type ShortenApp interface {
-	CreateShortenURL(ctx context.Context, url models.URL) (string, error)
+	CreateShortURL(ctx context.Context, url models.URL) (string, error)
 	SearchUrl(ctx context.Context, path string) (string, error)
 }
 
@@ -29,7 +29,7 @@ func NewShortenApp(config config.Config, repo repo.ShortenRepo, redis *redis.Cli
 	return &shortenApp{config, repo, redis}
 }
 
-func (s *shortenApp) CreateShortenURL(ctx context.Context, url models.URL) (string, error) {
+func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string, error) {
 
 	if url.Path == "" {
 
