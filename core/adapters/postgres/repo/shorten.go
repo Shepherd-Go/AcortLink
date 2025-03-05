@@ -5,20 +5,16 @@ import (
 	"time"
 
 	"acortlink/core/domain/models"
+	"acortlink/core/domain/ports"
 
 	"gorm.io/gorm"
 )
-
-type ShortenRepo interface {
-	CreateShorten(ctx context.Context, url models.URL) error
-	SearchUrl(ctx context.Context, path string) (models.URL, error)
-}
 
 type shortenRepo struct {
 	db *gorm.DB
 }
 
-func NewShortenRepo(db *gorm.DB) ShortenRepo {
+func NewShortenRepo(db *gorm.DB) ports.ShortenRepo {
 	return &shortenRepo{db}
 }
 

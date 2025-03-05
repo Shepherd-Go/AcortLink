@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"acortlink/core/app"
 	"acortlink/core/domain/models"
+	"acortlink/core/domain/ports"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -14,10 +14,10 @@ type ShortenerRequest interface {
 }
 
 type shortenerRequest struct {
-	shorten app.ShortenApp
+	shorten ports.ShortenApp
 }
 
-func NewShortener(shorten app.ShortenApp) ShortenerRequest {
+func NewShortener(shorten ports.ShortenApp) ShortenerRequest {
 	return &shortenerRequest{shorten}
 }
 

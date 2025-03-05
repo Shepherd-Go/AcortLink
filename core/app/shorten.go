@@ -6,26 +6,21 @@ import (
 	"net/http"
 
 	"acortlink/config"
-	"acortlink/core/adapters/postgres/repo"
 	"acortlink/core/domain/models"
+	"acortlink/core/domain/ports"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"
 )
 
-type ShortenApp interface {
-	CreateShortURL(ctx context.Context, url models.URL) (string, error)
-	SearchUrl(ctx context.Context, path string) (string, error)
-}
-
 type shortenApp struct {
 	config config.Config
-	repo   repo.ShortenRepo
+	repo   ports.ShortenRepo
 	redis  *redis.Client
 }
 
-func NewShortenApp(config config.Config, repo repo.ShortenRepo, redis *redis.Client) ShortenApp {
+func NewShortenApp(config config.Config, repo ports.ShortenRepo, redis *redis.Client) ports.ShortenApp {
 	return &shortenApp{config, repo, redis}
 }
 
