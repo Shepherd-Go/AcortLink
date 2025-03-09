@@ -8,6 +8,7 @@ import (
 	"acortlink/core/adapters/postgres"
 	"acortlink/core/adapters/postgres/repo"
 	"acortlink/core/adapters/redis"
+	red "acortlink/core/adapters/redis/repo"
 	"acortlink/core/app"
 
 	"github.com/labstack/echo/v4"
@@ -40,6 +41,7 @@ func BuildContainer() *dig.Container {
 	_ = Container.Provide(app.NewShortenApp)
 
 	_ = Container.Provide(repo.NewShortenRepo)
+	_ = Container.Provide(red.NewShortenRepoRedis)
 
 	return Container
 

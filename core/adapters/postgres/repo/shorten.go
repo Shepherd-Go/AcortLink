@@ -14,7 +14,7 @@ type shortenRepo struct {
 	db *gorm.DB
 }
 
-func NewShortenRepo(db *gorm.DB) ports.ShortenRepo {
+func NewShortenRepo(db *gorm.DB) ports.ShortenRepoPostgres {
 	return &shortenRepo{db}
 }
 

@@ -3,6 +3,7 @@ package handler
 import (
 	"acortlink/core/domain/models"
 	"acortlink/core/domain/ports"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -24,6 +25,8 @@ func NewShortener(shorten ports.ShortenApp) ShortenerRequest {
 func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 
 	ctx := c.Request().Context()
+
+	fmt.Println(c.Request().Header)
 
 	url := models.URL{}
 

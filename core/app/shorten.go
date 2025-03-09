@@ -11,28 +11,25 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/redis/go-redis/v9"
 )
 
 type shortenApp struct {
 	config config.Config
-	repo   ports.ShortenRepo
-	redis  *redis.Client
+	postgr ports.ShortenRepoPostgres
+	redis  ports.ShortenRepoRedis
 }
 
-func NewShortenApp(config config.Config, repo ports.ShortenRepo, redis *redis.Client) ports.ShortenApp {
+func NewShortenApp(config config.Config, repo ports.ShortenRepoPostgres, redis ports.ShortenRepoRedis) ports.ShortenApp {
 	return &shortenApp{config, repo, redis}
 }
 
 func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string, error) {
 
 	if url.Path == "" {
-
 		url.Path = uuid.New().String()[:6]
-
 	}
 
-	urlBD, err := s.repo.SearchUrl(ctx, url.Path)
+	urlBD, err := s.postgr.SearchUrl(ctx, url.Path)
 	if err != nil {
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
 	}
@@ -41,14 +38,10 @@ func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string
 		return "", echo.NewHTTPError(http.StatusConflict, "path already exists")
 	}
 
-	if err := s.repo.CreateShorten(ctx, url); err != nil {
-		println(err.Error())
-		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
-	}
-
-	err = s.redis.Set(ctx, url.Path, url.URL, 0).Err()
-	if err != nil {
+	if err := s.postgr.CreateShorten(ctx, url); err != nil {
 		fmt.Println(err.Error())
+		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
+
 	}
 
 	return s.config.Domain.Link + url.Path, nil
@@ -56,7 +49,7 @@ func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string
 
 func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error) {
 
-	val, err := s.redis.Get(context.Background(), path).Result()
+	val, err := s.redis.SearchUrl(context.Background(), path)
 	if err != nil {
 		fmt.Println("Error al obtener valor de Redis:", err)
 	}
@@ -65,7 +58,7 @@ func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error)
 		return val, nil
 	}
 
-	url, err := s.repo.SearchUrl(ctx, path)
+	url, err := s.postgr.SearchUrl(ctx, path)
 	if err != nil {
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
 	}
@@ -74,7 +67,7 @@ func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error)
 		return "", echo.NewHTTPError(http.StatusNotFound, "url not found")
 	}
 
-	err = s.redis.Set(ctx, path, url.URL, 0).Err()
+	err = s.redis.CreateShorten(ctx, path, url.URL, 0)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
