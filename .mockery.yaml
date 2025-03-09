@@ -1,0 +1,16 @@
+all: True
+recursive: True
+disable-version-string: True
+mockname: "{{.InterfaceName}}"
+filename: "mock_{{.InterfaceName}}.go"
+with-expecter: False
+outpkg: "mocks"
+packages:
+
+  acortlink/cmd/api/handler:
+    config:
+    dir: "mocks/cmd/api/handler"
+
+  acortlink/core/domain/ports:
+    config:
+    dir: "mocks/core/domain/ports"
