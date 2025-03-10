@@ -3,7 +3,6 @@ package handler
 import (
 	"acortlink/core/domain/models"
 	"acortlink/core/domain/ports"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -26,16 +25,14 @@ func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	fmt.Println(c.Request().Header)
-
 	url := models.URL{}
 
 	if err := c.Bind(&url); err != nil {
-		return echo.NewHTTPError(400, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if err := url.Validate(); err != nil {
-		return echo.NewHTTPError(400, err.Error())
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
 	link, err := r.shorten.CreateShortURL(ctx, url)
@@ -52,11 +49,11 @@ func (r *shortenerRequest) SearchOriginalUrl(c echo.Context) error {
 	path := models.Path{}
 
 	if err := c.Bind(&path); err != nil {
-		return echo.NewHTTPError(400, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if err := path.Validate(); err != nil {
-		return echo.NewHTTPError(400, err.Error())
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
 	url, err := r.shorten.SearchUrl(ctx, path.Path)
