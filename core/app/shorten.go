@@ -49,7 +49,7 @@ func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string
 
 func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error) {
 
-	val, err := s.redis.SearchUrl(context.Background(), path)
+	val, err := s.redis.SearchUrl(ctx, path)
 	if err != nil {
 		fmt.Println("Error al obtener valor de Redis:", err)
 	}
