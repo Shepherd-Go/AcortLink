@@ -38,7 +38,7 @@ func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string
 		return "", echo.NewHTTPError(http.StatusConflict, "path already exists")
 	}
 
-	if err := s.postgr.CreateShorten(ctx, url); err != nil {
+	if err := s.postgr.Save(ctx, url); err != nil {
 		fmt.Println(err.Error())
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
 
@@ -67,7 +67,7 @@ func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error)
 		return "", echo.NewHTTPError(http.StatusNotFound, "url not found")
 	}
 
-	err = s.redis.CreateShorten(ctx, path, url.URL, 0)
+	err = s.redis.Save(ctx, path, url.URL, 0)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

@@ -15,12 +15,12 @@ type ShortenRepoRedis struct {
 	mock.Mock
 }
 
-// CreateShorten provides a mock function with given fields: ctx, key, value, _a3
-func (_m *ShortenRepoRedis) CreateShorten(ctx context.Context, key string, value interface{}, _a3 time.Duration) error {
+// Save provides a mock function with given fields: ctx, key, value, _a3
+func (_m *ShortenRepoRedis) Save(ctx context.Context, key string, value interface{}, _a3 time.Duration) error {
 	ret := _m.Called(ctx, key, value, _a3)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CreateShorten")
+		panic("no return value specified for Save")
 	}
 
 	var r0 error

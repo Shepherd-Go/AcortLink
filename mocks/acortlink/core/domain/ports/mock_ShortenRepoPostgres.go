@@ -14,12 +14,12 @@ type ShortenRepoPostgres struct {
 	mock.Mock
 }
 
-// CreateShorten provides a mock function with given fields: ctx, url
-func (_m *ShortenRepoPostgres) CreateShorten(ctx context.Context, url models.URL) error {
+// Save provides a mock function with given fields: ctx, url
+func (_m *ShortenRepoPostgres) Save(ctx context.Context, url models.URL) error {
 	ret := _m.Called(ctx, url)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CreateShorten")
+		panic("no return value specified for Save")
 	}
 
 	var r0 error

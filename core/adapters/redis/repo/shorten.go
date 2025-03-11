@@ -16,7 +16,7 @@ func NewShortenRepoRedis(redisClient *redis.Client) ports.ShortenRepoRedis {
 	return &shortenRepoRedis{redisClient}
 }
 
-func (r *shortenRepoRedis) CreateShorten(ctx context.Context, key string, value interface{}, time time.Duration) error {
+func (r *shortenRepoRedis) Save(ctx context.Context, key string, value interface{}, time time.Duration) error {
 
 	if err := r.redisClient.Set(ctx, key, value, time).Err(); err != nil {
 		return err

@@ -18,7 +18,7 @@ func NewShortenRepo(db *gorm.DB) ports.ShortenRepoPostgres {
 	return &shortenRepo{db}
 }
 
-func (r *shortenRepo) CreateShorten(ctx context.Context, url models.URL) error {
+func (r *shortenRepo) Save(ctx context.Context, url models.URL) error {
 
 	if err := r.db.WithContext(ctx).
 		Table("urls.urls").

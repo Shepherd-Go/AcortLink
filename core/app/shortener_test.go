@@ -76,7 +76,7 @@ func (suite *ShortenerTestApp) TestCreate_WhenCreateShortenFail() {
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
 		Return(models.URL{}, nil)
 
-	suite.postgr.Mock.On("CreateShorten", ctx, urlIsGood).
+	suite.postgr.Mock.On("Save", ctx, urlIsGood).
 		Return(errors.New("Error"))
 
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
@@ -92,7 +92,7 @@ func (suite *ShortenerTestApp) TestCreate_WhenSuccess() {
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
 		Return(models.URL{}, nil)
 
-	suite.postgr.Mock.On("CreateShorten", ctx, urlIsGood).
+	suite.postgr.Mock.On("Save", ctx, urlIsGood).
 		Return(nil)
 
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
@@ -141,7 +141,7 @@ func (suite *ShortenerTestApp) TestSearch_WhenSuccess() {
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
 		Return(models.URL{URL: "test"}, nil)
 
-	suite.redis.Mock.On("CreateShorten", ctx, "test", "test", 0*time.Second).
+	suite.redis.Mock.On("Save", ctx, "test", "test", 0*time.Second).
 		Return(nil)
 
 	_, err := suite.underTest.SearchUrl(ctx, urlIsGood.Path)
