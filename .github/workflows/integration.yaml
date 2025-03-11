@@ -1,0 +1,55 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:  ["main"] 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with: 
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+
+    - name: Install dependencies
+      run: go get ./...
+
+    - name: Build
+      run: go build -v ./...
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+
+      - name: Load .env file
+        uses: aarcangeli/load-dotenv@v1
+        with:
+            filenames: |
+              .env.testing
+    
+      - name: Test with the Go CLI
+        run: go test ./... -v    
+        
+  docker_validate:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Validate Dockerfile build
+        run: docker build --no-cache .
+
+  
