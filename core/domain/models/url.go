@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"time"
 
 	"github.com/go-playground/mold/modifiers"
 	"github.com/go-playground/validator/v10"
@@ -14,9 +13,8 @@ var (
 )
 
 type URL struct {
-	URL       string    `json:"url" validate:"required,url" mold:"trim"`
-	Path      string    `json:"path" mold:"trim"`
-	ExpiresAt time.Time `json:"expires_at"`
+	URL  string `json:"url" validate:"required,url" mold:"trim"`
+	Path string `json:"path" mold:"trim"`
 }
 
 func (u *URL) Validate() error {

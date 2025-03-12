@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"time"
 
 	"acortlink/core/domain/models"
 	"acortlink/core/domain/ports"
@@ -36,7 +35,7 @@ func (r *shortenRepo) SearchUrl(ctx context.Context, path string) (models.URL, e
 
 	if err := r.db.WithContext(ctx).
 		Table("urls.urls").
-		Where("path = ? and (expires_at > ? or expires_at = ?)", path, time.Now().UTC(), "0001-01-01 00:00:00.000").
+		Where("path = ?", path).
 		Find(&url).
 		Error; err != nil {
 		return models.URL{}, err

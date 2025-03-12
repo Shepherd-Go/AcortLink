@@ -18,9 +18,8 @@ var (
 	ctx = context.Background()
 
 	urlIsGood = models.URL{
-		URL:       "http://test.com",
-		Path:      "test",
-		ExpiresAt: time.Now(),
+		URL:  "http://test.com",
+		Path: "test",
 	}
 )
 
