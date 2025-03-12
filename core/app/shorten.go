@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"acortlink/config"
 	"acortlink/core/domain/models"
@@ -67,7 +68,7 @@ func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error)
 		return "", echo.NewHTTPError(http.StatusNotFound, "url not found")
 	}
 
-	err = s.redis.Save(ctx, path, url.URL, 0)
+	err = s.redis.Save(ctx, path, url.URL, 24*time.Hour)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
