@@ -30,10 +30,11 @@ func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URLCreate) (
 
 	urlBD, err := s.postgr.SearchUrl(ctx, url.Path)
 	if err != nil {
+		fmt.Println(err.Error())
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
 	}
 
-	if urlBD.URL != "" {
+	if urlBD.ID != uuid.Nil {
 		return "", echo.NewHTTPError(http.StatusConflict, "path already exists")
 	}
 
@@ -57,6 +58,7 @@ func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error)
 
 		url, err = s.postgr.SearchUrl(ctx, path)
 		if err != nil {
+			fmt.Println(err.Error())
 			return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
 		}
 
@@ -72,7 +74,7 @@ func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error)
 	}
 
 	if err := s.postgr.AddContToQuerysUrl(ctx, url.ID); err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 	}
 
 	return url.URL, nil
