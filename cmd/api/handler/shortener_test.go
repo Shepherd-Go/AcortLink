@@ -23,7 +23,8 @@ var (
 	}
 
 	dataCreateIsGood = models.URLCreate{
-		URL: "http://test.com",
+		URL:    "http://test.com",
+		Domain: "http://test.com",
 	}
 
 	dataSearchIsEmpty = models.Path{

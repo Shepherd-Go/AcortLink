@@ -53,25 +53,22 @@ func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error)
 		fmt.Println("Error al obtener valor de Redis:", err)
 	}
 
-	if url.ID != uuid.Nil {
-		if err := s.postgr.AddContToQuerysUrl(ctx, url.ID); err != nil {
-			fmt.Println(err)
-		}
-		return url.URL, nil
-	}
-
-	url, err = s.postgr.SearchUrl(ctx, path)
-	if err != nil {
-		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
-	}
-
 	if url.ID == uuid.Nil {
-		return "", echo.NewHTTPError(http.StatusNotFound, "url not found")
-	}
 
-	err = s.redis.Save(ctx, path, url, 24*time.Hour)
-	if err != nil {
-		fmt.Println(err.Error())
+		url, err = s.postgr.SearchUrl(ctx, path)
+		if err != nil {
+			return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
+		}
+
+		if url.ID == uuid.Nil {
+			return "", echo.NewHTTPError(http.StatusNotFound, "url not found")
+		}
+
+		err = s.redis.Save(ctx, path, url, 24*time.Hour)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+
 	}
 
 	if err := s.postgr.AddContToQuerysUrl(ctx, url.ID); err != nil {

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"acortlink/core/domain/entity"
 	"acortlink/core/domain/models"
 	"acortlink/core/domain/ports"
 	"net/http"
@@ -40,7 +41,7 @@ func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, link)
+	return c.JSON(http.StatusCreated, entity.Success{URL: entity.URL{Short_Url: link}})
 }
 
 func (r *shortenerRequest) SearchOriginalUrl(c echo.Context) error {
@@ -56,10 +57,10 @@ func (r *shortenerRequest) SearchOriginalUrl(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	url, err := r.shorten.SearchUrl(ctx, path.Path)
+	original_url, err := r.shorten.SearchUrl(ctx, path.Path)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, url)
+	return c.JSON(http.StatusOK, entity.Success{URL: entity.URL{Original_Url: original_url}})
 }

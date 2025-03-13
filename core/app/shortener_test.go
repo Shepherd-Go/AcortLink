@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -91,6 +92,8 @@ func (suite *ShortenerTestApp) TestCreate_WhenSuccess() {
 	suite.postgr.Mock.On("Save", ctx, urlIsGood).
 		Return(nil)
 
+	suite.postgr.Mock.On("AddContToQuerysUrl", ctx, uuid.New()).Return(nil)
+
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
 
 	suite.NoError(err)
@@ -104,6 +107,8 @@ func (suite *ShortenerTestApp) TestSearch_WhenRepoPostgresFail() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
 		Return(models.URLResponse{}, errors.New("Error"))
+
+	suite.postgr.Mock.On("AddContToQuerysUrl", ctx, uuid.New()).Return(nil)
 
 	_, err := suite.underTest.SearchUrl(ctx, urlIsGood.Path)
 
