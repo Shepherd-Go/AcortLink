@@ -17,13 +17,14 @@ import (
 var (
 	ctx = context.Background()
 
-	dataCreateUrlIsNull = models.URL{
+	dataCreateUrlIsNull = models.URLCreate{
 		URL:  "",
 		Path: "test",
 	}
 
-	dataCreateIsGood = models.URL{
-		URL: "http://test.com",
+	dataCreateIsGood = models.URLCreate{
+		URL:    "http://test.com",
+		Domain: "http://test.com",
 	}
 
 	dataSearchIsEmpty = models.Path{

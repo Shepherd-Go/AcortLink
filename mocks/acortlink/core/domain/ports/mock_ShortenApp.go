@@ -15,7 +15,7 @@ type ShortenApp struct {
 }
 
 // CreateShortURL provides a mock function with given fields: ctx, url
-func (_m *ShortenApp) CreateShortURL(ctx context.Context, url models.URL) (string, error) {
+func (_m *ShortenApp) CreateShortURL(ctx context.Context, url models.URLCreate) (string, error) {
 	ret := _m.Called(ctx, url)
 
 	if len(ret) == 0 {
@@ -24,16 +24,16 @@ func (_m *ShortenApp) CreateShortURL(ctx context.Context, url models.URL) (strin
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.URL) (string, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.URLCreate) (string, error)); ok {
 		return rf(ctx, url)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.URL) string); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.URLCreate) string); ok {
 		r0 = rf(ctx, url)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.URL) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.URLCreate) error); ok {
 		r1 = rf(ctx, url)
 	} else {
 		r1 = ret.Error(1)

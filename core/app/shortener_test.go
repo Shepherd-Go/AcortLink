@@ -1,7 +1,6 @@
 package app_test
 
 import (
-	"acortlink/config"
 	"acortlink/core/app"
 	"acortlink/core/domain/models"
 	"acortlink/core/domain/ports"
@@ -11,16 +10,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 )
 
 var (
 	ctx = context.Background()
 
-	urlIsGood = models.URL{
-		URL:       "http://test.com",
-		Path:      "test",
-		ExpiresAt: time.Now(),
+	urlIsGood = models.URLCreate{
+		URL:    "http://test.com",
+		Domain: "http://test.com",
+		Path:   "test",
 	}
 )
 
@@ -30,7 +30,6 @@ func TestShortenerSuite(t *testing.T) {
 
 type ShortenerTestApp struct {
 	suite.Suite
-	config    config.Config
 	postgr    *mocks.ShortenRepoPostgres
 	redis     *mocks.ShortenRepoRedis
 	underTest ports.ShortenApp
@@ -38,17 +37,16 @@ type ShortenerTestApp struct {
 
 func (suite *ShortenerTestApp) SetupTest() {
 
-	suite.config = config.Config{}
 	suite.postgr = &mocks.ShortenRepoPostgres{}
 	suite.redis = &mocks.ShortenRepoRedis{}
-	suite.underTest = app.NewShortenApp(suite.config, suite.postgr, suite.redis)
+	suite.underTest = app.NewShortenApp(suite.postgr, suite.redis)
 
 }
 
 func (suite *ShortenerTestApp) TestCreate_WhenRepoPostgresFail() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, errors.New("Error"))
+		Return(models.URLResponse{}, errors.New("Error"))
 
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
 
@@ -61,7 +59,7 @@ func (suite *ShortenerTestApp) TestCreate_WhenRepoPostgresFail() {
 func (suite *ShortenerTestApp) TestCreate_WhenPathExists() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{URL: "test"}, nil)
+		Return(models.URLResponse{ID: uuid.New()}, nil)
 
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
 
@@ -71,10 +69,10 @@ func (suite *ShortenerTestApp) TestCreate_WhenPathExists() {
 
 }
 
-func (suite *ShortenerTestApp) TestCreate_WhenCreateShortenFail() {
+func (suite *ShortenerTestApp) TestCreate_WhenPostgSaveFail() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, nil)
+		Return(models.URLResponse{}, nil)
 
 	suite.postgr.Mock.On("Save", ctx, urlIsGood).
 		Return(errors.New("Error"))
@@ -90,10 +88,12 @@ func (suite *ShortenerTestApp) TestCreate_WhenCreateShortenFail() {
 func (suite *ShortenerTestApp) TestCreate_WhenSuccess() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, nil)
+		Return(models.URLResponse{}, nil)
 
 	suite.postgr.Mock.On("Save", ctx, urlIsGood).
 		Return(nil)
+
+	suite.postgr.Mock.On("AddContToQuerysUrl", ctx, uuid.New()).Return(nil)
 
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
 
@@ -104,10 +104,10 @@ func (suite *ShortenerTestApp) TestCreate_WhenSuccess() {
 func (suite *ShortenerTestApp) TestSearch_WhenRepoPostgresFail() {
 
 	suite.redis.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return("", nil)
+		Return(models.URLResponse{}, nil)
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, errors.New("Error"))
+		Return(models.URLResponse{}, errors.New("Error"))
 
 	_, err := suite.underTest.SearchUrl(ctx, urlIsGood.Path)
 
@@ -120,10 +120,10 @@ func (suite *ShortenerTestApp) TestSearch_WhenRepoPostgresFail() {
 func (suite *ShortenerTestApp) TestSearch_WhenUrlNotFound() {
 
 	suite.redis.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return("", nil)
+		Return(models.URLResponse{}, nil)
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, nil)
+		Return(models.URLResponse{}, nil)
 
 	_, err := suite.underTest.SearchUrl(ctx, urlIsGood.Path)
 
@@ -135,16 +135,24 @@ func (suite *ShortenerTestApp) TestSearch_WhenUrlNotFound() {
 
 func (suite *ShortenerTestApp) TestSearch_WhenSuccess() {
 
-	suite.redis.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return("", nil)
+	urlResponse := models.URLResponse{
+		ID:     uuid.New(),
+		URL:    "http://test.com",
+		Domain: "http://test.com",
+		Path:   "test",
+	}
 
-	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{URL: "test"}, nil)
+	suite.redis.Mock.On("SearchUrl", ctx, urlResponse.Path).
+		Return(models.URLResponse{}, nil)
 
-	suite.redis.Mock.On("Save", ctx, "test", "test", 0*time.Second).
-		Return(nil)
+	suite.postgr.Mock.On("SearchUrl", ctx, urlResponse.Path).
+		Return(urlResponse, nil)
 
-	_, err := suite.underTest.SearchUrl(ctx, urlIsGood.Path)
+	suite.redis.Mock.On("Save", ctx, urlResponse.Path, urlResponse, 24*time.Hour).Return(nil)
+
+	suite.postgr.Mock.On("AddContToQuerysUrl", ctx, urlResponse.ID).Return(nil)
+
+	_, err := suite.underTest.SearchUrl(ctx, "test")
 
 	suite.NoError(err)
 

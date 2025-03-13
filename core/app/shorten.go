@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
-	"acortlink/config"
 	"acortlink/core/domain/models"
 	"acortlink/core/domain/ports"
 
@@ -14,16 +14,15 @@ import (
 )
 
 type shortenApp struct {
-	config config.Config
 	postgr ports.ShortenRepoPostgres
 	redis  ports.ShortenRepoRedis
 }
 
-func NewShortenApp(config config.Config, repo ports.ShortenRepoPostgres, redis ports.ShortenRepoRedis) ports.ShortenApp {
-	return &shortenApp{config, repo, redis}
+func NewShortenApp(repo ports.ShortenRepoPostgres, redis ports.ShortenRepoRedis) ports.ShortenApp {
+	return &shortenApp{repo, redis}
 }
 
-func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string, error) {
+func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URLCreate) (string, error) {
 
 	if url.Path == "" {
 		url.Path = uuid.New().String()[:6]
@@ -31,10 +30,11 @@ func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string
 
 	urlBD, err := s.postgr.SearchUrl(ctx, url.Path)
 	if err != nil {
+		fmt.Println(err.Error())
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
 	}
 
-	if urlBD.URL != "" {
+	if urlBD.ID != uuid.Nil {
 		return "", echo.NewHTTPError(http.StatusConflict, "path already exists")
 	}
 
@@ -44,31 +44,36 @@ func (s *shortenApp) CreateShortURL(ctx context.Context, url models.URL) (string
 
 	}
 
-	return s.config.Domain.Link + url.Path, nil
+	return url.Domain + url.Path, nil
 }
 
 func (s *shortenApp) SearchUrl(ctx context.Context, path string) (string, error) {
 
-	val, err := s.redis.SearchUrl(ctx, path)
+	url, err := s.redis.SearchUrl(ctx, path)
 	if err != nil {
 		fmt.Println("Error al obtener valor de Redis:", err)
 	}
 
-	if val != "" {
-		return val, nil
+	if url.ID == uuid.Nil {
+
+		url, err = s.postgr.SearchUrl(ctx, path)
+		if err != nil {
+			fmt.Println(err.Error())
+			return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
+		}
+
+		if url.ID == uuid.Nil {
+			return "", echo.NewHTTPError(http.StatusNotFound, "url not found")
+		}
+
+		err = s.redis.Save(ctx, path, url, 24*time.Hour)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+
 	}
 
-	url, err := s.postgr.SearchUrl(ctx, path)
-	if err != nil {
-		return "", echo.NewHTTPError(http.StatusInternalServerError, "unexpected error")
-	}
-
-	if url.URL == "" {
-		return "", echo.NewHTTPError(http.StatusNotFound, "url not found")
-	}
-
-	err = s.redis.Save(ctx, path, url.URL, 0)
-	if err != nil {
+	if err := s.postgr.AddContToQuerysUrl(ctx, url.ID); err != nil {
 		fmt.Println(err.Error())
 	}
 

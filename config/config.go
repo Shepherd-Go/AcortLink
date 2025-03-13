@@ -21,17 +21,12 @@ func Get() *Config {
 
 type Config struct {
 	Server   Server   `env:"server"`
-	Domain   Domain   `env:"domain"`
 	Postgres Postgres `env:"postgres"`
 	Redis    Redis    `env:"redis"`
 }
 
 type Server struct {
 	Port int `env:"port"`
-}
-
-type Domain struct {
-	Link string `env:"link"`
 }
 
 type Postgres struct {
