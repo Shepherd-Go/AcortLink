@@ -1,7 +1,6 @@
 package app_test
 
 import (
-	"acortlink/config"
 	"acortlink/core/app"
 	"acortlink/core/domain/models"
 	"acortlink/core/domain/ports"
@@ -17,7 +16,7 @@ import (
 var (
 	ctx = context.Background()
 
-	urlIsGood = models.URL{
+	urlIsGood = models.URLCreate{
 		URL:  "http://test.com",
 		Path: "test",
 	}
@@ -29,7 +28,6 @@ func TestShortenerSuite(t *testing.T) {
 
 type ShortenerTestApp struct {
 	suite.Suite
-	config    config.Config
 	postgr    *mocks.ShortenRepoPostgres
 	redis     *mocks.ShortenRepoRedis
 	underTest ports.ShortenApp
@@ -37,17 +35,16 @@ type ShortenerTestApp struct {
 
 func (suite *ShortenerTestApp) SetupTest() {
 
-	suite.config = config.Config{}
 	suite.postgr = &mocks.ShortenRepoPostgres{}
 	suite.redis = &mocks.ShortenRepoRedis{}
-	suite.underTest = app.NewShortenApp(suite.config, suite.postgr, suite.redis)
+	suite.underTest = app.NewShortenApp(suite.postgr, suite.redis)
 
 }
 
 func (suite *ShortenerTestApp) TestCreate_WhenRepoPostgresFail() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, errors.New("Error"))
+		Return(models.URLResponse{}, errors.New("Error"))
 
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
 
@@ -60,7 +57,7 @@ func (suite *ShortenerTestApp) TestCreate_WhenRepoPostgresFail() {
 func (suite *ShortenerTestApp) TestCreate_WhenPathExists() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{URL: "test"}, nil)
+		Return(models.URLResponse{URL: "test"}, nil)
 
 	_, err := suite.underTest.CreateShortURL(ctx, urlIsGood)
 
@@ -73,7 +70,7 @@ func (suite *ShortenerTestApp) TestCreate_WhenPathExists() {
 func (suite *ShortenerTestApp) TestCreate_WhenCreateShortenFail() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, nil)
+		Return(models.URLResponse{}, nil)
 
 	suite.postgr.Mock.On("Save", ctx, urlIsGood).
 		Return(errors.New("Error"))
@@ -89,7 +86,7 @@ func (suite *ShortenerTestApp) TestCreate_WhenCreateShortenFail() {
 func (suite *ShortenerTestApp) TestCreate_WhenSuccess() {
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, nil)
+		Return(models.URLResponse{}, nil)
 
 	suite.postgr.Mock.On("Save", ctx, urlIsGood).
 		Return(nil)
@@ -106,7 +103,7 @@ func (suite *ShortenerTestApp) TestSearch_WhenRepoPostgresFail() {
 		Return("", nil)
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, errors.New("Error"))
+		Return(models.URLResponse{}, errors.New("Error"))
 
 	_, err := suite.underTest.SearchUrl(ctx, urlIsGood.Path)
 
@@ -122,7 +119,7 @@ func (suite *ShortenerTestApp) TestSearch_WhenUrlNotFound() {
 		Return("", nil)
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{}, nil)
+		Return(models.URLResponse{}, nil)
 
 	_, err := suite.underTest.SearchUrl(ctx, urlIsGood.Path)
 
@@ -138,7 +135,7 @@ func (suite *ShortenerTestApp) TestSearch_WhenSuccess() {
 		Return("", nil)
 
 	suite.postgr.Mock.On("SearchUrl", ctx, urlIsGood.Path).
-		Return(models.URL{URL: "test"}, nil)
+		Return(models.URLResponse{URL: "test"}, nil)
 
 	suite.redis.Mock.On("Save", ctx, "test", "test", 0*time.Second).
 		Return(nil)

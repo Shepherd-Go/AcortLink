@@ -3,6 +3,7 @@
 package mocks
 
 import (
+	models "acortlink/core/domain/models"
 	context "context"
 
 	mock "github.com/stretchr/testify/mock"
@@ -15,17 +16,17 @@ type ShortenRepoRedis struct {
 	mock.Mock
 }
 
-// Save provides a mock function with given fields: ctx, key, value, _a3
-func (_m *ShortenRepoRedis) Save(ctx context.Context, key string, value interface{}, _a3 time.Duration) error {
-	ret := _m.Called(ctx, key, value, _a3)
+// Save provides a mock function with given fields: ctx, key, url, _a3
+func (_m *ShortenRepoRedis) Save(ctx context.Context, key string, url models.URLResponse, _a3 time.Duration) error {
+	ret := _m.Called(ctx, key, url, _a3)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Save")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, interface{}, time.Duration) error); ok {
-		r0 = rf(ctx, key, value, _a3)
+	if rf, ok := ret.Get(0).(func(context.Context, string, models.URLResponse, time.Duration) error); ok {
+		r0 = rf(ctx, key, url, _a3)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -34,22 +35,22 @@ func (_m *ShortenRepoRedis) Save(ctx context.Context, key string, value interfac
 }
 
 // SearchUrl provides a mock function with given fields: ctx, path
-func (_m *ShortenRepoRedis) SearchUrl(ctx context.Context, path string) (string, error) {
+func (_m *ShortenRepoRedis) SearchUrl(ctx context.Context, path string) (models.URLResponse, error) {
 	ret := _m.Called(ctx, path)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SearchUrl")
 	}
 
-	var r0 string
+	var r0 models.URLResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (string, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (models.URLResponse, error)); ok {
 		return rf(ctx, path)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) string); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) models.URLResponse); ok {
 		r0 = rf(ctx, path)
 	} else {
-		r0 = ret.Get(0).(string)
+		r0 = ret.Get(0).(models.URLResponse)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {

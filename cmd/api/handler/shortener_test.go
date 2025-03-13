@@ -17,12 +17,12 @@ import (
 var (
 	ctx = context.Background()
 
-	dataCreateUrlIsNull = models.URL{
+	dataCreateUrlIsNull = models.URLCreate{
 		URL:  "",
 		Path: "test",
 	}
 
-	dataCreateIsGood = models.URL{
+	dataCreateIsGood = models.URLCreate{
 		URL: "http://test.com",
 	}
 

@@ -25,7 +25,7 @@ func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	url := models.URL{}
+	url := models.URLCreate{}
 
 	if err := c.Bind(&url); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
