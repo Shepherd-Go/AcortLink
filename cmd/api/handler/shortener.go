@@ -41,7 +41,7 @@ func (r *shortenerRequest) CreateShortURL(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, entity.Success{URL: entity.URL{Short_Url: link}})
+	return c.JSON(http.StatusCreated, entity.Success{Short_Url: link})
 }
 
 func (r *shortenerRequest) SearchOriginalUrl(c echo.Context) error {
@@ -62,5 +62,5 @@ func (r *shortenerRequest) SearchOriginalUrl(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, entity.Success{URL: entity.URL{Original_Url: original_url}})
+	return c.JSON(http.StatusOK, entity.Success{Original_Url: original_url})
 }
