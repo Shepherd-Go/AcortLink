@@ -20,7 +20,7 @@ To create a short URL, only the following parameters are needed.
 type URLCreate struct {
 	URL    string `json:"url" gorm:"column:original_url" validate:"required,url" mold:"trim"`
 	Domain string `json:"domain" gorm:"column:domain" validate:"required,url" mold:"trim"`
-	Path   string `json:"path" gorm:"column:path" validate:"max=6" mold:"trim"`
+	Path   string `json:"path" gorm:"column:path" mold:"trim"`
 }
 ```
 
@@ -49,8 +49,24 @@ And the result obtained would be the following:
 
 ``` json
 {
-    "url": {
         "short_url": "https://tudominio.com/github"
-    }
+}
+```
+
+### If the API does not receive a path, it will generate it automatically and an example of this would look like this:
+
+POST `https://openacort.link/create`
+
+``` json
+{
+    "url":"https://github.com/shepherd-go",
+    "domain":"https://tudominio.com/",
+}
+ ```
+Answer obtained. 
+
+ ``` json
+{
+        "short_url": "https://tudominio.com/x5hb34"
 }
 ```

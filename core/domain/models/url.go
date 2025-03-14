@@ -16,7 +16,7 @@ var (
 type URLCreate struct {
 	URL    string `json:"url" gorm:"column:original_url" validate:"required,url" mold:"trim"`
 	Domain string `json:"domain" gorm:"column:domain" validate:"required,url" mold:"trim"`
-	Path   string `json:"path" gorm:"column:path" validate:"max=6" mold:"trim"`
+	Path   string `json:"path" gorm:"column:path" mold:"trim"`
 }
 
 type URLResponse struct {
